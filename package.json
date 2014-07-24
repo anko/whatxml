@@ -1,0 +1,15 @@
+{
+  "name": "whatxml",
+  "version": "0.0.1",
+  "description": "Construct XML with LiveScript function calls",
+  "main": "whatxml.ls",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "An <an@cyan.io>",
+  "license": "ISC",
+  "dependencies": {
+    "ent": "^2.0.0",
+    "prelude-ls": "^1.1.1"
+  }
+}
