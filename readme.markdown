@@ -1,6 +1,8 @@
+*(This is pretty experimental. More of an idea than anything.)*
+
 # What XML?
 
-Right question! Because it's no XML, actually. Look, it's [LiveScript]:
+Exactly. It's [LiveScript]:
 
     require! \./whatxml.ls
 
@@ -25,8 +27,8 @@ Right question! Because it's no XML, actually. Look, it's [LiveScript]:
 
     console.log x.to-string!
 
-And it gives you this this (ran through `xmllint --html -` for doctype and
-formatting:
+And it gives you this (ran it through `xmllint --html -` for doctype and
+formatting):
 
     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
     <html>
@@ -47,8 +49,8 @@ formatting:
 # Why?
 
 [LiveScript]'s callable property-access-[cascades] are a great syntax for
-nesting structures which aren't usually nestable (like function calls, here).
-This makes a clean templating DSL.
+nesting structures which aren't usually nestable (as function calls here). This
+makes for a clean templating DSL and I hadn't seen it tried.
 
 JavaScript doesn't have a cascade syntax, so I haven't seen a similar approach
 tried anywhere.
@@ -99,6 +101,12 @@ Ew.
 You could of course write your templates in LiveScript and automatically
 compile it when necessary. Then you'll have mostly reimplemented [Handlebars]
 with a different syntax. :)
+
+# Try it
+
+    npm install
+
+You'll want to have LiveScript installed.
 
 
  [browserify]: http://browserify.org/
