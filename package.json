@@ -1,6 +1,6 @@
 {
   "name": "whatxml",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Construct XML with LiveScript function calls",
   "main": "whatxml.ls",
   "scripts": {
