@@ -4,12 +4,13 @@
   "description": "Construct XML with LiveScript function calls",
   "main": "whatxml.ls",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "lsc test.ls"
   },
   "author": "An <an@cyan.io>",
   "license": "ISC",
   "dependencies": {
     "ent": "^2.0.0",
-    "prelude-ls": "^1.1.1"
+    "prelude-ls": "^1.1.1",
+    "tape": "^2.14.0"
   }
 }

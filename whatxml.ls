@@ -10,6 +10,8 @@ class CommentNode
 
 module.exports = new-node = (name, self-closing=false) ->
 
+  throw Error "Tag name must be a String" unless typeof name is \string
+
   attributes = {}
   children = []
 
