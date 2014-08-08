@@ -10,7 +10,7 @@ test = (name, test-func) ->
     t.end!
 
 
-whatxml = require "./whatxml.ls"
+whatxml = require "./index.ls"
 
 test "wants string name" ->
     (-> whatxml!) `@throws` Error

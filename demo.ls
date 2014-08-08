@@ -1,5 +1,5 @@
 #!/bin/env lsc
-require! \./whatxml.ls
+whatxml = require \./index.ls
 
 x = whatxml \html
   .. \head
