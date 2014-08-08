@@ -15,12 +15,18 @@ module.exports = new-node = (name, self-closing=false) ->
   attributes = {}
   children = []
 
-  add-element = (name, new-self-closing=false) ->
-    if self-closing
-      throw new Error "Self-closing node can't contain other nodes"
-    n = new-node name, new-self-closing
-    children.push n
-    n
+  add-element = (name-or-object, new-self-closing=false) ->
+    switch typeof name-or-object
+      | \string =>
+        name = name-or-object
+        if self-closing
+          throw new Error "Self-closing node can't contain other nodes"
+        n = new-node name, new-self-closing
+        children.push n
+        n
+      | \object =>
+        object = name-or-object
+        attributes <<< object
 
   add-element
     .._ = ->

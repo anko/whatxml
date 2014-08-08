@@ -37,8 +37,9 @@ test "comments" ->
 
 test "adding attributes and text" ->
   x = whatxml \a
-    ..attr \class \gh-link
-    ..attr \href "https://github.com"
+    .. class : \gh-link               # style 1; feel free to pass many if
+                                      #   their order in output is irrelevant
+    ..attr \href "https://github.com" # style 2
     .._ "to Github"
   x.to-string! `@equals` "<a class=\"gh-link\" href=\"https://github.com\">
                             to Github
@@ -58,4 +59,3 @@ test "raw content text" ->
   x = whatxml \a
     ..raw "<stuff attr=\"a\">within</stuff>"
   x.to-string! `@equals` "<a><stuff attr=\"a\">within</stuff></a>"
-
