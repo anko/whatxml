@@ -4,8 +4,8 @@
   "description": "Construct XML with LiveScript function calls",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/LiveScript/bin/lsc test.ls",
-    "prepublish": "./node_modules/LiveScript/bin/lsc --compile --bare index.ls"
+    "test": "lsc test.ls",
+    "prepublish": "lsc --compile --bare index.ls"
   },
   "author": "An <an@cyan.io>",
   "license": "ISC",
