@@ -4,6 +4,9 @@ require! \ent
 class TextNode
   (@data) ->
   to-string : -> ent.encode @data
+class RawNode
+  (@data) ->
+  to-string : -> @data
 class CommentNode
   (@data) ->
   to-string : -> "<!--#{ent.encode @data}-->"
@@ -15,7 +18,7 @@ module.exports = new-node = (name, self-closing=false) ->
   attributes = {}
   children   = []
 
-  complain = -> throw new Error "Self-closing node must be empty"
+  complain = -> throw new Error "Self-closing nodes may not have children"
 
   add-child = (name, new-self-closing=false) ->
     complain! if self-closing
@@ -23,23 +26,35 @@ module.exports = new-node = (name, self-closing=false) ->
       children.push ..
 
   add-text    = -> complain! if self-closing ; children.push new TextNode it
-  add-raw     = -> complain! if self-closing ; children.push it
+  add-raw     = -> complain! if self-closing ; children.push new RawNode it
   add-comment = -> complain! if self-closing ; children.push new CommentNode it
 
   set-attribute     = (k, v=true) -> attributes[k] = v
   import-attributes = -> attributes <<< it
 
-  render = ->
-    s-attributes = attributes
+  render = (input) ->
+
+    # Resolve function-containing attributes
+    resolved-attributes = ^^attributes
+    for k, v of resolved-attributes
+      if typeof v is \function
+        resolved-attributes[k] = input |> v
+
+    # Resolve function-containing children
+    resolved-children = children.map ->
+      ^^it
+        ..data = input |> it.data if typeof it.data is \function
+
+    s-attributes = resolved-attributes
       |> obj-to-pairs
       |> map ([key,value]) ->
         | value is true => key                              # lone key
         | otherwise     => "#key=\"#{ent.encode value}\""   # valued key
       |> unwords
-    # Prepend space if we got anything
+    # Prepend space if necessary
     if s-attributes.length then s-attributes = " #s-attributes"
 
-    s-children = children.map (.to-string!) .reduce (+), ""
+    s-children = resolved-children.map (.to-string input) .reduce (+), ""
 
     if self-closing then "<#name#s-attributes />"
     else                 "<#name#s-attributes>#s-children</#name>"
