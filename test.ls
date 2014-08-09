@@ -35,19 +35,26 @@ test "comments" ->
                             <!--Ninjas were here!-->
                           </anything>"
 
-test "adding attributes and text" ->
+test "adding attributes in tag spec" ->
+  x = whatxml \a id : \gh-link .to-string!
+  x.to-string! `@equals` "<a id=\"gh-link\"></a>"
+test "adding attributes by calling `attr`" ->
   x = whatxml \a
-    .. class : \gh-link               # style 1; feel free to pass many if
-                                      #   their order in output is irrelevant
-    ..attr \href "https://github.com" # style 2
-    .._ "to Github"
-  x.to-string! `@equals` "<a class=\"gh-link\" href=\"https://github.com\">
-                            to Github
-                          </a>"
+    ..attr \id \gh-link
+  x.to-string! `@equals` "<a id=\"gh-link\"></a>"
+test "adding attributes by calling with object" ->
+  x = whatxml \a
+    .. id : \gh-link
+  x.to-string! `@equals` "<a id=\"gh-link\"></a>"
+
+test "adding text" ->
+  x = whatxml \p
+    .._ "whatever text"
+  x.to-string! `@equals` "<p>whatever text</p>"
 
 test "self-closing tags" ->
   x = whatxml \a
-    .. \b true
+    ..self-closing \b
   x.to-string! `@equals` "<a><b /></a>"
 
 test "content text escaping" ->
@@ -80,8 +87,7 @@ test "templates are nestable" ->
     .. \head
       .. \title ._ (.title)
     .. \body
-      .. \div
-        .. id : \content
+      .. \div id : \content
         .. \h1 ._ (.title)
         ..raw (.content)
 

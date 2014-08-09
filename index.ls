@@ -11,18 +11,22 @@ class CommentNode
   (@data) ->
   to-string : -> "<!--#{ent.encode @data}-->"
 
-module.exports = new-node = (name, self-closing=false) ->
+new-node = (name, attributes={} self-closing=false) ->
 
   throw Error "Tag name must be a String" unless typeof name is \string
 
-  attributes = {}
+  attributes = ^^attributes
   children   = []
 
   complain = -> throw new Error "Self-closing nodes may not have children"
 
-  add-child = (name, new-self-closing=false) ->
+  add-child = (name, attributes) ->
     complain! if self-closing
-    n = new-node name, new-self-closing
+    n = new-node name, attributes, false
+      children.push ..
+  add-child-self-closing = (name, attributes) ->
+    complain! if self-closing
+    n = new-node name, attributes, true
       children.push ..
 
   add-text    = -> complain! if self-closing ; children.push new TextNode it
@@ -66,8 +70,17 @@ module.exports = new-node = (name, self-closing=false) ->
       | \object => import-attributes ).apply this, arguments
 
   base
-    .._         = add-text
-    ..raw       = add-raw
-    ..comment   = add-comment
-    ..attr      = set-attribute
-    ..to-string = render
+    .._            = add-text
+    ..raw          = add-raw
+    ..comment      = add-comment
+    ..attr         = set-attribute
+    ..self-closing = add-child-self-closing
+    ..to-string    = render
+
+new-root = (name, attributes) ->
+  new-node name, attributes, false
+new-root
+  ..self-closing = (name, attributes) ->
+    new-node name, attributes, true
+
+module.exports = new-root
