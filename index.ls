@@ -13,45 +13,46 @@ module.exports = new-node = (name, self-closing=false) ->
   throw Error "Tag name must be a String" unless typeof name is \string
 
   attributes = {}
-  children = []
+  children   = []
 
-  add-element = (name-or-object, new-self-closing=false) ->
-    switch typeof name-or-object
-      | \string =>
-        name = name-or-object
-        if self-closing
-          throw new Error "Self-closing node can't contain other nodes"
-        n = new-node name, new-self-closing
-        children.push n
-        n
-      | \object =>
-        object = name-or-object
-        attributes <<< object
+  complain = -> throw new Error "Self-closing node must be empty"
 
-  add-element
-    .._ = ->
-      if self-closing
-        throw new Error "Self-closing node can't contain text"
-      children.push new TextNode it
-    ..raw = ->
-      if self-closing
-        throw new Error "Self-closing node can't contain raw text"
-      children.push it
-    ..comment = ->
-      if self-closing
-        throw new Error "Self-closing node can't contain a comment"
-      children.push new CommentNode it
-    ..attr = (key, value=true) -> attributes[key] = value
-    ..to-string = ->
-      attributes-string = obj-to-pairs attributes
-        |> map ([key,value]) ->
-          if value is true then key             # standalone key
-          else "#key=\"#{ent.encode value}\""   # key with value
-        |> unwords
-      children-string = children.map (.to-string!) .reduce (+), ""
-      attributes-string = if attributes-string.length
-        then " #attributes-string" else ""
-      if self-closing
-        "<#name#attributes-string />"
-      else
-        "<#name#attributes-string>#children-string</#name>"
+  add-child = (name, new-self-closing=false) ->
+    complain! if self-closing
+    n = new-node name, new-self-closing
+      children.push ..
+
+  add-text    = -> complain! if self-closing ; children.push new TextNode it
+  add-raw     = -> complain! if self-closing ; children.push it
+  add-comment = -> complain! if self-closing ; children.push new CommentNode it
+
+  set-attribute     = (k, v=true) -> attributes[k] = v
+  import-attributes = -> attributes <<< it
+
+  render = ->
+    s-attributes = attributes
+      |> obj-to-pairs
+      |> map ([key,value]) ->
+        | value is true => key                              # lone key
+        | otherwise     => "#key=\"#{ent.encode value}\""   # valued key
+      |> unwords
+    # Prepend space if we got anything
+    if s-attributes.length then s-attributes = " #s-attributes"
+
+    s-children = children.map (.to-string!) .reduce (+), ""
+
+    if self-closing then "<#name#s-attributes />"
+    else                 "<#name#s-attributes>#s-children</#name>"
+
+
+  base = (first-arg) ->
+    ( switch typeof first-arg
+      | \string => add-child
+      | \object => import-attributes ).apply this, arguments
+
+  base
+    .._         = add-text
+    ..raw       = add-raw
+    ..comment   = add-comment
+    ..attr      = set-attribute
+    ..to-string = render
