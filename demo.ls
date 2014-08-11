@@ -1,6 +1,20 @@
 #!/bin/env lsc
 whatxml = require \./index.ls
 
+
+p = whatxml \person
+console.log p.to-string!
+
+gandalf = whatxml \person
+  .. profession : \wizard   # Set an attribute.
+  .. \name                  # Add a child node
+    .._ "Gandalf"           # ... and put some text in it.
+console.log gandalf.to-string!
+
+t = whatxml \tower lean : "3.99"
+    .. \place city : "Pisa", country : "Italy"
+console.log t.to-string!
+
 x = whatxml \html
   .. \head
     .. \title ._ "An example"
