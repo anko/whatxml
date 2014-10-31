@@ -9,6 +9,10 @@
   },
   "author": "An <an@cyan.io>",
   "license": "ISC",
+  "files": [
+      "index.js",
+      "readme.markdown"
+  ],
   "dependencies": {
     "ent": "^2.0.0",
     "prelude-ls": "^1.1.1"
