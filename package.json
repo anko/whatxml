@@ -3,6 +3,10 @@
   "version": "0.0.2",
   "description": "Construct XML with LiveScript function calls",
   "main": "index.js",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/anko/whatxml.git"
+  },
   "scripts": {
     "test": "lsc test.ls",
     "prepublish": "lsc --compile --bare index.ls"
