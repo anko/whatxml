@@ -3,6 +3,7 @@
   "version": "0.0.2+1",
   "description": "Construct XML with LiveScript function calls",
   "main": "index.js",
+  "bugs": "https://github.com/anko/whatxml/issues",
   "keywords": [
       "LiveScript",
       "XML",
