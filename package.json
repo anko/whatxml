@@ -1,19 +1,20 @@
 {
   "name": "whatxml",
-  "version": "0.0.2+1",
+  "version": "0.0.3",
   "description": "Construct XML (or (X)HTML) with LiveScript function calls",
   "main": "index.js",
   "bugs": "https://github.com/anko/whatxml/issues",
   "keywords": [
-      "LiveScript",
-      "XML",
-      "XHTML",
-      "HTML",
-      "syntax", "sugar"
+    "LiveScript",
+    "XML",
+    "XHTML",
+    "HTML",
+    "syntax",
+    "sugar"
   ],
   "repository": {
-      "type": "git",
-      "url": "https://github.com/anko/whatxml.git"
+    "type": "git",
+    "url": "https://github.com/anko/whatxml.git"
   },
   "scripts": {
     "test": "lsc test.ls",
@@ -22,8 +23,8 @@
   "author": "An <an@cyan.io>",
   "license": "ISC",
   "files": [
-      "index.js",
-      "readme.markdown"
+    "index.js",
+    "readme.markdown"
   ],
   "dependencies": {
     "he": "^0.5.0",
