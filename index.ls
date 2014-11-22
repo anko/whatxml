@@ -1,15 +1,15 @@
 { obj-to-pairs, map, unwords } = require \prelude-ls
-require! \ent
+require! \he
 
 class TextNode
   (@data) ->
-  to-string : -> ent.encode @data
+  to-string : -> he.encode @data
 class RawNode
   (@data) ->
   to-string : -> @data
 class CommentNode
   (@data) ->
-  to-string : -> "<!--#{ent.encode @data}-->"
+  to-string : -> "<!--#{he.encode @data}-->"
 
 new-node = (name, attributes={} self-closing=false) ->
 
@@ -53,7 +53,7 @@ new-node = (name, attributes={} self-closing=false) ->
       |> obj-to-pairs
       |> map ([key,value]) ->
         | value is true => key                              # lone key
-        | otherwise     => "#key=\"#{ent.encode value}\""   # valued key
+        | otherwise     => "#key=\"#{he.encode value}\""   # valued key
       |> unwords
     # Prepend space if necessary
     if s-attributes.length then s-attributes = " #s-attributes"
