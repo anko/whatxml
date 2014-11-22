@@ -1,8 +1,23 @@
 # whatxml
 
-DRY `(X|HT|XHT)ML` templating with [LiveScript]'s [cascade] syntax.
+DRY `(X|HT|XHT)ML` templating with [LiveScript][1]'s [cascade][2] syntax.
 
-## Usage
+## API summary
+
+ - `.. <string> [<attr-object>]` adds a tag (with optional attributes)
+ - `..self-closing <string> [<attr-object>]` same, but self-closing
+ - `.. <object>` sets attributes
+ - `.._ <string>` adds text
+ - `..raw <string>` adds text (without escaping it)
+ - `..comment <string>` adds a comment
+
+`toString` renders the tag and, recursively, its child tags too.
+
+## Install
+
+    npm install whatxml
+
+## API tutorial
 
 ### Basics
 
@@ -16,7 +31,10 @@ console.log p.to-string!
 <person></person>
 ```
 
-Add child tags, attributes and text.
+- - -
+
+Call it with a `string` to create child tags, with an `object` to add
+attributes or call `_` to add text between the tags.
 
 ```ls
 gandalf = whatxml \person
@@ -29,7 +47,9 @@ console.log gandalf.to-string!
 <person profession="wizard"><name>Gandalf</name></person>
 ```
 
-Shortcut: Create a tag with attributes by passing them as a second argument.
+- - -
+
+*Shortcut*: Pass object of attributes as second argument when creating a tag.
 
 ```ls
 t = whatxml \tower lean : "3.99"
@@ -40,7 +60,9 @@ console.log t.to-string!
 <tower lean="3.99"><place city="Pisa" country="Italy"></place></tower>
 ```
 
-Add self-closing tags and comments too.
+- - -
+
+You can add `self-closing` tags and `comment`s too.
 
 ```ls
 x = whatxml \a
@@ -51,9 +73,11 @@ x = whatxml \a
 <a><b /><!--what--></a>
 ```
 
-Text is escaped automatically, but you can bypass that by calling `raw`. (This
-lets you include known text, e.g. from
-[`marked`](https://github.com/chjj/marked) or )
+- - -
+
+All text is escaped automatically, but you can bypass that by calling `raw`.
+(This lets you include text you know is escaped already, e.g. from
+[`marked`][3]
 
 ```ls
 greeting = whatxml \p
@@ -72,9 +96,9 @@ console.log x.to-string!
 
 ### Templating
 
-You can also pass functions to the setters. Those functions are called with
-whatever arguments `toString` was called with, so you can choose their values
-based on data:
+To generate content based on data, you can also pass a function to any setter
+call. When `toString` is called on a tag, the functions passed before are
+called with those arguments.
 
 ```ls
 link = whatxml \a href : (.href)
@@ -89,27 +113,11 @@ console.log link.to-string name : \runescape href : "http://runescape.com"
 <a href="http://runescape.com">RUNESCAPE</a>
 ```
 
-## In summary
+## Limitations
 
- - `.. <string> [<attr-object>]` adds a tag (with optional attributes)
- - `..self-closing <string> [<attr-object>]` same, but self-closing
- - `.. <object>` sets attributes
- - `.._ <string>` adds text
- - `..raw <string>` adds text (without escaping it)
- - `..comment <string>` adds a comment
-
-`toString` renders the tag and, recursively, its child tags too.
-
-## Comment gotchas
-
-If you're going to add XML comments, **it's up to you to provide valid text for
-them**!
-
-`whatxml` always generates valid XML and errors if it can't, *with one
-exception*: Comment tags may not contain two consecutive hyphens (`--`). That's
-just [what the XML spec
-says](http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments).  Enforcing
-that would be inefficient, so `whatxml` doesn't.
+If you're going to add XML comments, **make sure they're valid text**: Comment
+tags may not contain two consecutive hyphens (`--`). [The XML spec requires
+it][4]. For performance reasons, `whatxml` doesn't enforce that.
 
 ## Related libraries
 
@@ -118,26 +126,22 @@ templating engine.
 
 Existing attempts have their flaws:
 
- - [`live-templ`](https://www.npmjs.org/package/live-tmpl) is the closest to my
-   goals, but its objects-in-nested-arrays base is too rigid to handle
-   comments, raw text data or self-closing tags. There's no way to combine the
-   template with input data.
- - [`create-xml-ls`](https://www.npmjs.org/package/create-xml-ls)' syntax is
-   object-based, so it can't even represent two tags with the same name on the
-   same level of nesting.
- - [`htmls`](https://www.npmjs.org/package/htmls) supports only the HTML tag
-   set and treats template code as a second-class citizen: They're stored as
-   strings, later parsed and transformed to actual code, then `eval`'d. (The
-   readme makes it very clear that it's a for-fun project though.)
-
-## Try it
-
-It's not on `npm` (yet), but you can clone this repo and
-
-    npm install
-
-then point your `require`s at the root dir.
+ - [`live-templ`][5] is the closest to my goals, but its
+   objects-in-nested-arrays base is too rigid to handle comments, raw text data
+   or self-closing tags. It provides no way to combine the template with input
+   data.
+ - [`create-xml-ls`][6]' syntax is object-based: It can't represent two tags
+   with the same name on the same level of nesting…
+ - [`htmls`][7] supports only the HTML tag set and treats template code as a
+   second-class citizen: They're stored as strings, later parsed and
+   transformed to actual code, then `eval`'d. (The readme makes it very clear
+   it's a for-fun project though.)
 
 
-[LiveScript]: http://livescript.net/
-[cascade]: http://livescript.net/#property-access-cascades
+[1]: http://livescript.net/
+[2]: http://livescript.net/#property-access-cascades
+[3]: https://github.com/chjj/marked)
+[4]: http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments
+[5]: https://www.npmjs.org/package/live-tmpl
+[6]: https://www.npmjs.org/package/create-xml-ls
+[7]: https://www.npmjs.org/package/htmls
