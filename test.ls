@@ -60,7 +60,7 @@ test "self-closing tags" ->
 test "content text escaping" ->
   x = whatxml \a
     .._ "x < y"
-  x.to-string! `@equals` "<a>x &#60; y</a>"
+  x.to-string! `@equals` "<a>x &\#x3C; y</a>"
 
 test "raw content text" ->
   x = whatxml \a
