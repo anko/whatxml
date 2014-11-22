@@ -2,6 +2,8 @@
 
 DRY `(X|HT|XHT)ML` templating with [LiveScript][1]'s [cascade][2] syntax.
 
+    npm install whatxml
+
 ## API summary
 
  - `.. <string> [<attr-object>]` adds a tag (with optional attributes)
@@ -12,10 +14,6 @@ DRY `(X|HT|XHT)ML` templating with [LiveScript][1]'s [cascade][2] syntax.
  - `..comment <string>` adds a comment
 
 `toString` renders the tag and, recursively, its child tags too.
-
-## Install
-
-    npm install whatxml
 
 ## API tutorial
 
