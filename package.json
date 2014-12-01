@@ -32,6 +32,6 @@
   },
   "devDependencies": {
     "LiveScript": "^1.2.0",
-    "tape": "^2.14.0"
+    "tape": "^3.0.3"
   }
 }
