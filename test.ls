@@ -1,5 +1,18 @@
 #!env lsc
 
+# These tests are written with the [tape][1] module, which produces output in a
+# standardised protocol called [Test Anything Protocol (TAP)][2].  This
+# occupies stdout, so if you need to print some diagnostics, you might want to
+# log to stderr or to open a log file.
+#
+# Various [TAP-consuming programs exist][3], some of which prettify test
+# results for you. [faucet][4] is nice.
+#
+# [1]: https://www.npmjs.org/package/tape
+# [2]: http://testanything.org/
+# [3]: http://testanything.org/consumers.html
+# [4]: https://www.npmjs.org/package/faucet
+
 test = (name, test-func) ->
   (require \tape) name, (t) ->
 
