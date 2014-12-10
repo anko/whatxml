@@ -4,6 +4,31 @@ DRY `(X|HT|XHT)ML` templating with [LiveScript][1]'s [cascade][2] syntax.
 
     npm install whatxml
 
+## Basically
+
+You write
+
+```ls
+x = whatxml \html
+    .. \head
+        .. \title ._ "My page"
+        ..self-closing \link rel : \stylesheet type : \text/css href : \main.css
+    .. \body
+        .. \p ._ "Here's a paragraph."
+
+console.log x.to-string!
+```
+
+and you get
+
+```html
+<html><head><title>My page</title><link rel="stylesheet" type="text/css" href="main.css" /></head><body><p>Here&#x27;s a paragraph.</p></body></html>
+```
+
+You can also pass a function to anything and decide its based on what's passed
+in to the `to-string` call, a lot like `.attr` in [D3][3]. (Read on for the
+details.)
+
 ## API summary
 
  - `.. <string> [<attr-object>]` adds a tag (with optional attributes)
@@ -75,7 +100,7 @@ x = whatxml \a
 
 All text is escaped automatically, but you can bypass that by calling `raw`.
 (This lets you include text you know is escaped already, e.g. from
-[`marked`][3]
+[`marked`][4]
 
 ```ls
 greeting = whatxml \p
@@ -115,7 +140,7 @@ console.log link.to-string name : \runescape href : "http://runescape.com"
 
 If you're going to add XML comments, **make sure they're valid text**: Comment
 tags may not contain two consecutive hyphens (`--`). [The XML spec requires
-it][4]. For performance reasons, `whatxml` doesn't enforce that.
+it][5]. For performance reasons, `whatxml` doesn't enforce that.
 
 ## Related libraries
 
@@ -124,13 +149,13 @@ templating engine.
 
 Existing attempts have their flaws:
 
- - [`live-templ`][5] is the closest to my goals, but its
+ - [`live-templ`][6] is the closest to my goals, but its
    objects-in-nested-arrays base is too rigid to handle comments, raw text data
    or self-closing tags. It provides no way to combine the template with input
    data.
- - [`create-xml-ls`][6]' syntax is object-based: It can't represent two tags
+ - [`create-xml-ls`][7]' syntax is object-based: It can't represent two tags
    with the same name on the same level of nesting…
- - [`htmls`][7] supports only the HTML tag set and treats template code as a
+ - [`htmls`][8] supports only the HTML tag set and treats template code as a
    second-class citizen: They're stored as strings, later parsed and
    transformed to actual code, then `eval`'d. (The readme makes it very clear
    it's a for-fun project though.)
@@ -138,8 +163,9 @@ Existing attempts have their flaws:
 
 [1]: http://livescript.net/
 [2]: http://livescript.net/#property-access-cascades
-[3]: https://github.com/chjj/marked)
-[4]: http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments
-[5]: https://www.npmjs.org/package/live-tmpl
-[6]: https://www.npmjs.org/package/create-xml-ls
-[7]: https://www.npmjs.org/package/htmls
+[3]: http://d3js.org/
+[4]: https://github.com/chjj/marked)
+[5]: http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments
+[6]: https://www.npmjs.org/package/live-tmpl
+[7]: https://www.npmjs.org/package/create-xml-ls
+[8]: https://www.npmjs.org/package/htmls
