@@ -1,6 +1,6 @@
 {
   "name": "whatxml",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Construct XML (or (X)HTML) with LiveScript function calls",
   "main": "index.js",
   "bugs": "https://github.com/anko/whatxml/issues",
