@@ -5,15 +5,18 @@ whatxml = require \./index.ls
 p = whatxml \person
 console.log p.to-string!
 
+
 gandalf = whatxml \person
   .. profession : \wizard   # Set an attribute.
   .. \name                  # Add a child node
     .._ "Gandalf"           # ... and put some text in it.
 console.log gandalf.to-string!
 
+
 t = whatxml \tower lean : "3.99"
     .. \place city : "Pisa", country : "Italy"
 console.log t.to-string!
+
 
 x = whatxml \html
   .. \head
@@ -31,9 +34,21 @@ x = whatxml \html
 
 console.log x.to-string!
 
+
+x2 = whatxml \html
+    .. \head
+        .. \title ._ "My page"
+        ..self-closing \link rel : \stylesheet type : \text/css href : \main.css
+    .. \body
+        .. \p ._ "Here's a paragraph."
+
+console.log x2.to-string!
+
+
 greeting = whatxml \p
   .._ "What's up <3"
 console.log greeting.to-string!
+
 
 link = whatxml \a href : (.href)
   .._ (.name.to-upper-case!)
