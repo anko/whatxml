@@ -164,7 +164,7 @@ Existing attempts have their flaws:
 [1]: http://livescript.net/
 [2]: http://livescript.net/#property-access-cascades
 [3]: http://d3js.org/
-[4]: https://github.com/chjj/marked)
+[4]: https://github.com/chjj/marked
 [5]: http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments
 [6]: https://www.npmjs.org/package/live-tmpl
 [7]: https://www.npmjs.org/package/create-xml-ls
