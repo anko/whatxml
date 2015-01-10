@@ -100,7 +100,7 @@ x = whatxml \a
 
 All text is escaped automatically, but you can bypass that by calling `raw`.
 (This lets you include text you know is escaped already, e.g. from
-[`marked`][4]
+[`marked`][4].)
 
 ```ls
 greeting = whatxml \p
