@@ -52,7 +52,7 @@ new-node = (name, attributes={} self-closing=false) ->
     s-attributes = resolved-attributes
       |> obj-to-pairs
       |> map ([key,value]) ->
-        | value is true => key                              # lone key
+        | value is true => key                             # lone key
         | otherwise     => "#key=\"#{he.encode value}\""   # valued key
       |> unwords
     # Prepend space if necessary

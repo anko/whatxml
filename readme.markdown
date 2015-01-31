@@ -98,6 +98,17 @@ x = whatxml \a
 
 - - -
 
+If you need attributes without a value attached, set it to `true`:
+
+```ls
+x = whatxml \input { +selected }
+```
+```ls
+<input selected></input>
+```
+
+- - -
+
 All text is escaped automatically, but you can bypass that by calling `raw`.
 (This lets you include text you know is escaped already, e.g. from
 [`marked`][4].)

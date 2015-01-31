@@ -60,6 +60,10 @@ test "adding attributes by calling with object" ->
     .. id : \gh-link
   x.to-string! `@equals` "<a id=\"gh-link\"></a>"
 
+test "adding standalone attribute" ->
+  x = whatxml \input selected : true
+  x.to-string! `@equals` "<input selected></input>"
+
 test "adding text" ->
   x = whatxml \p
     .._ "whatever text"
