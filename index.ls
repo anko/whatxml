@@ -1,4 +1,4 @@
-{ obj-to-pairs, map, unwords } = require \prelude-ls
+{ obj-to-pairs, map, unwords, Obj : map : objmap }  = require \prelude-ls
 require! \he
 
 new-tag = (name, attributes={} self-closing=false) ->
@@ -23,23 +23,19 @@ new-tag = (name, attributes={} self-closing=false) ->
   render = (input) ->
 
     # Resolve function-containing attributes
-    resolved-attributes = ^^attributes
-    for k, v of resolved-attributes
-      if typeof v is \function
-        resolved-attributes[k] = input |> v
-
-    s-attributes = resolved-attributes
+    s-attributes = attributes
+      |> objmap ->
+        | typeof it is \function => it input
+        | otherwise              => it
       |> obj-to-pairs
       |> map ([key,value]) ->
-        | value is true => key                             # lone key
-        | otherwise     => "#key=\"#{he.encode value}\""   # valued key
+        | value is true => key                           # lone key
+        | otherwise     => "#key=\"#{he.encode value}\"" # valued key
       |> unwords
     # Prepend space if necessary
     if s-attributes.length then s-attributes = " #s-attributes"
 
-    s-children = children
-      .map -> it input
-      .reduce (+), ""
+    s-children = children .map (-> it input) .reduce (+), ""
 
     if self-closing then "<#name#s-attributes />"
     else                 "<#name#s-attributes>#s-children</#name>"
