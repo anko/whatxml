@@ -1,17 +1,7 @@
 { obj-to-pairs, map, unwords } = require \prelude-ls
 require! \he
 
-class TextNode
-  (@data) ->
-  to-string : -> he.encode @data
-class RawNode
-  (@data) ->
-  to-string : -> @data
-class CommentNode
-  (@data) ->
-  to-string : -> "<!--#{he.encode @data}-->"
-
-new-node = (name, attributes={} self-closing=false) ->
+new-tag = (name, attributes={} self-closing=false) ->
 
   throw Error "Tag name must be a String" unless typeof name is \string
 
@@ -20,21 +10,15 @@ new-node = (name, attributes={} self-closing=false) ->
 
   complain = -> throw new Error "Self-closing nodes may not have children"
 
-  add-child = (name, attributes) ->
-    complain! if self-closing
-    n = new-node name, attributes, false
-      children.push ..
-  add-child-self-closing = (name, attributes) ->
-    complain! if self-closing
-    n = new-node name, attributes, true
-      children.push ..
+  content-node = (render) ->
+    (value) ->
+      (template-data) ->
+        | typeof value is \function => render value template-data
+        | _ => render value
 
-  add-text    = -> complain! if self-closing ; children.push new TextNode it
-  add-raw     = -> complain! if self-closing ; children.push new RawNode it
-  add-comment = -> complain! if self-closing ; children.push new CommentNode it
-
-  set-attribute     = (k, v=true) -> attributes[k] = v
-  import-attributes = -> attributes <<< it
+  text-node    = content-node -> he.encode it
+  raw-node     = content-node -> it # identity
+  comment-node = content-node -> "<!--#{he.encode it}-->"
 
   render = (input) ->
 
@@ -43,11 +27,6 @@ new-node = (name, attributes={} self-closing=false) ->
     for k, v of resolved-attributes
       if typeof v is \function
         resolved-attributes[k] = input |> v
-
-    # Resolve function-containing children
-    resolved-children = children.map ->
-      ^^it
-        ..data = input |> it.data if typeof it.data is \function
 
     s-attributes = resolved-attributes
       |> obj-to-pairs
@@ -58,29 +37,45 @@ new-node = (name, attributes={} self-closing=false) ->
     # Prepend space if necessary
     if s-attributes.length then s-attributes = " #s-attributes"
 
-    s-children = resolved-children.map (.to-string input) .reduce (+), ""
+    s-children = children
+      .map -> it input
+      .reduce (+), ""
 
     if self-closing then "<#name#s-attributes />"
     else                 "<#name#s-attributes>#s-children</#name>"
 
+  render
+    ..add-text    = -> complain! if self-closing ; children.push text-node it
+    ..add-raw     = -> complain! if self-closing ; children.push raw-node it
+    ..add-comment = -> complain! if self-closing ; children.push comment-node it
+    ..set-attribute     = (k, v=true) -> attributes[k] = v
+    ..import-attributes = -> attributes <<< it
+    ..add-child = (name, attributes) ->
+      complain! if self-closing
+      n = new-tag name, attributes, false
+        children.push ..
+    ..add-child-self-closing = (name, attributes) ->
+      complain! if self-closing
+      n = new-tag name, attributes, true
+        children.push ..
 
+wrap = (node) ->
   base = (first-arg) ->
-    ( switch typeof first-arg
-      | \string => add-child
-      | \object => import-attributes ).apply this, arguments
+    switch typeof first-arg
+      | \string =>
+        wrap (node.add-child .apply this, arguments)
+      | \object =>
+        node.import-attributes .apply this, arguments
+        return base
 
   base
-    .._            = add-text
-    ..raw          = add-raw
-    ..comment      = add-comment
-    ..attr         = set-attribute
-    ..self-closing = add-child-self-closing
-    ..to-string    = render
+    ..to-string = -> node it
+    .._ = node.add-text
+    ..raw = node.add-raw
+    ..attr = node.set-attribute
+    ..comment = node.add-comment
+    ..self-closing = node.add-child-self-closing
 
-new-root = (name, attributes) ->
-  new-node name, attributes, false
-new-root
-  ..self-closing = (name, attributes) ->
-    new-node name, attributes, true
 
-module.exports = new-root
+module.exports = construct = (name, attributes, self-closing) ->
+  wrap new-tag.apply this, arguments
