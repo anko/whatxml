@@ -49,11 +49,11 @@ new-tag = (name, attributes={} self-closing=false) ->
     ..import-attributes = -> attributes <<< it
     ..add-child = (name, attributes) ->
       die-if-self-closing!
-      n = new-tag name, attributes, false
+      new-tag name, attributes, false
         children.push ..
     ..add-child-self-closing = (name, attributes) ->
       die-if-self-closing!
-      n = new-tag name, attributes, true
+      new-tag name, attributes, true
         children.push ..
 
 # World-exposed API
