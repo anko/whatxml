@@ -8,7 +8,8 @@ new-tag = (name, attributes={} self-closing=false) ->
   attributes = ^^attributes
   children   = []
 
-  complain = -> throw new Error "Self-closing nodes may not have children"
+  die-if-self-closing = ->
+    throw new Error "Self-closing tags may not have children" if self-closing
 
   content-node = (render) ->
     (value) ->
@@ -16,9 +17,9 @@ new-tag = (name, attributes={} self-closing=false) ->
         | typeof value is \function => render value template-data
         | _ => render value
 
-  text-node    = content-node -> he.encode it
-  raw-node     = content-node -> it # identity
-  comment-node = content-node -> "<!--#{he.encode it}-->"
+  text-content    = content-node -> he.encode it
+  raw-content     = content-node -> it # identity
+  comment-content = content-node -> "<!--#{he.encode it}-->"
 
   render = (input) ->
 
@@ -41,17 +42,17 @@ new-tag = (name, attributes={} self-closing=false) ->
     else                 "<#name#s-attributes>#s-children</#name>"
 
   render
-    ..add-text    = -> complain! if self-closing ; children.push text-node it
-    ..add-raw     = -> complain! if self-closing ; children.push raw-node it
-    ..add-comment = -> complain! if self-closing ; children.push comment-node it
+    ..add-text    = -> die-if-self-closing! ; children.push text-content it
+    ..add-raw     = -> die-if-self-closing! ; children.push raw-content it
+    ..add-comment = -> die-if-self-closing! ; children.push comment-content it
     ..set-attribute     = (k, v=true) -> attributes[k] = v
     ..import-attributes = -> attributes <<< it
     ..add-child = (name, attributes) ->
-      complain! if self-closing
+      die-if-self-closing!
       n = new-tag name, attributes, false
         children.push ..
     ..add-child-self-closing = (name, attributes) ->
-      complain! if self-closing
+      die-if-self-closing!
       n = new-tag name, attributes, true
         children.push ..
 
