@@ -1,6 +1,10 @@
 { obj-to-pairs, map, unwords, Obj : map : objmap }  = require \prelude-ls
 require! \he
 
+# Internal tag abstraction
+# ------------------------
+# Each is a closure with methods for modifying its attributes or adding child
+# tags or other content.
 new-tag = (name, attributes={} self-closing=false) ->
 
   throw Error "Tag name must be a String" unless typeof name is \string
