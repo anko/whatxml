@@ -74,6 +74,16 @@ test "self-closing tags" ->
     ..self-closing \b
   x.to-string! `@equals` "<a><b /></a>"
 
+test "self-closing tag attributes" ->
+  x = whatxml \a
+    ..self-closing \b hi : \there
+  x.to-string! `@equals` "<a><b hi=\"there\" /></a>"
+
+test "self-closing tag can't have children" ->
+  x = whatxml \a
+    ..self-closing \b
+      .. \c `@throws` Error
+
 test "content text escaping" ->
   x = whatxml \a
     .._ "x < y"
