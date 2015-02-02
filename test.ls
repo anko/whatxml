@@ -84,6 +84,10 @@ test "self-closing tag can't have children" ->
     ..self-closing \b
       .. \c `@throws` Error
 
+test "self-closing root tag" ->
+  whatxml.self-closing \a attr : \b
+    ..to-string! `@equals` "<a attr=\"b\" />"
+
 test "content text escaping" ->
   x = whatxml \a
     .._ "x < y"

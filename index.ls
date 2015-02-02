@@ -77,3 +77,4 @@ wrap = (tag) ->
     ..self-closing = -> wrap tag.add-child &0, &1, true
 
 module.exports = wrap << new-tag
+  ..self-closing = -> wrap new-tag &0, &1, true
