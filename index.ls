@@ -53,13 +53,9 @@ new-tag = (name, attributes={} self-closing=false) ->
     ..add-comment = -> die-if-self-closing! ; children.push comment-content it
     ..set-attribute     = (k, v=true) -> attributes[k] = v
     ..import-attributes = -> attributes <<< it
-    ..add-child = (name, attributes) ->
+    ..add-child = ->
       die-if-self-closing!
-      new-tag name, attributes, false
-        children.push ..
-    ..add-child-self-closing = (name, attributes) ->
-      die-if-self-closing!
-      new-tag name, attributes, true
+      new-tag.apply this, arguments
         children.push ..
 
 # World-exposed API
@@ -71,13 +67,13 @@ new-tag = (name, attributes={} self-closing=false) ->
 wrap = (tag) ->
   ((first-arg) ->
     switch typeof first-arg
-      | \string => wrap tag.add-child ...
+      | \string => wrap tag.add-child &0, &1, false
       | \object => tag.import-attributes ... ; this )
     ..to-string    = tag                       .bind!
     .._            = tag.add-text              .bind!
     ..raw          = tag.add-raw               .bind!
     ..attr         = tag.set-attribute         .bind!
     ..comment      = tag.add-comment           .bind!
-    ..self-closing = tag.add-child-self-closing.bind!
+    ..self-closing = -> wrap tag.add-child &0, &1, true
 
 module.exports = wrap << new-tag
