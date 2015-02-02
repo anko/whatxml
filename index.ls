@@ -1,5 +1,5 @@
-{ obj-to-pairs, map, unwords, Obj : map : objmap }  = require \prelude-ls
-require! \he
+{ obj-to-pairs, map, unwords, Obj:map : obj-map } = require \prelude-ls
+require! \he # for character entity coding
 
 # Internal tag abstraction
 # ------------------------
@@ -31,7 +31,7 @@ new-tag = (name, attributes={} self-closing=false) ->
 
     # Resolve function-containing attributes
     s-attributes = attributes
-      |> objmap ->
+      |> obj-map ->
         | typeof it is \function => it input
         | otherwise              => it
       |> obj-to-pairs
