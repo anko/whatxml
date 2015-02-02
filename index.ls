@@ -55,23 +55,22 @@ new-tag = (name, attributes={} self-closing=false) ->
       n = new-tag name, attributes, true
         children.push ..
 
-wrap = (node) ->
-  base = (first-arg) ->
+# World-exposed API
+# -----------------
+# This delegates to the internal API, but rearranges/abbreviates it for
+# user-friendliness. The methods are bound to make sure the internal
+# abstraction can't leak and to document that their `this`-context doesn't
+# matter.
+wrap = (tag) ->
+  ((first-arg) ->
     switch typeof first-arg
-      | \string =>
-        wrap (node.add-child .apply this, arguments)
-      | \object =>
-        node.import-attributes .apply this, arguments
-        return base
+      | \string => wrap tag.add-child ...
+      | \object => tag.import-attributes ... ; this )
+    ..to-string    = tag                       .bind!
+    .._            = tag.add-text              .bind!
+    ..raw          = tag.add-raw               .bind!
+    ..attr         = tag.set-attribute         .bind!
+    ..comment      = tag.add-comment           .bind!
+    ..self-closing = tag.add-child-self-closing.bind!
 
-  base
-    ..to-string = -> node it
-    .._ = node.add-text
-    ..raw = node.add-raw
-    ..attr = node.set-attribute
-    ..comment = node.add-comment
-    ..self-closing = node.add-child-self-closing
-
-
-module.exports = construct = (name, attributes, self-closing) ->
-  wrap new-tag.apply this, arguments
+module.exports = wrap << new-tag
