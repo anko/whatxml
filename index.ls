@@ -11,15 +11,17 @@ new-tag = (name, attributes={} self-closing=false) ->
   die-if-self-closing = ->
     throw new Error "Self-closing tags may not have children" if self-closing
 
-  content-node = (render) ->
-    (value) ->
-      (template-data) ->
-        | typeof value is \function => render value template-data
-        | _ => render value
+  content = (
+    render        # function for rendering value to string
+    value         # value to render (or a template function)
+    template-data # data passed when templating
+  ) -->
+    | typeof value is \function => template-data |> value |> render
+    | otherwise                 => value |> render
 
-  text-content    = content-node -> he.encode it
-  raw-content     = content-node -> it # identity
-  comment-content = content-node -> "<!--#{he.encode it}-->"
+  text-content    = content -> he.encode it
+  raw-content     = content -> it # identity
+  comment-content = content -> "<!--#{he.encode it}-->"
 
   render = (input) ->
 
