@@ -81,7 +81,8 @@ You can also have stand-alone attributes without a value.  ([This is invalid
 XML][4], but is really handy for HTML-y things.)
 
 ```ls
-x = whatxml \input { +selected }
+whatxml \input { +selected }
+  ..to-string! |> console.log
 ```
 ```ls
 <input selected></input>
