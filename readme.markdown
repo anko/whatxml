@@ -77,8 +77,8 @@ x = whatxml \a
 <a><b /><!--what--></a>
 ```
 
-You can also have stand-alone attributes without a value.  ([This is invalid
-XML][4], but is really handy for HTML-y things.)
+You can have stand-alone attributes without a value by setting them to `true`.
+([It's invalid XML][4], but fine in HTML.)
 
 ```ls
 whatxml \input { +selected }
@@ -88,8 +88,8 @@ whatxml \input { +selected }
 <input selected></input>
 ```
 
-Text is escaped automatically, but you can bypass that if you know you've got
-already-escaped text (e.g. from some generator like [`marked`][5].)
+Text is escaped automatically, but you can bypass that if you have
+ready-escaped text (e.g. from a generator like [`marked`][5]).
 
 ```ls
 greeting = whatxml \p
@@ -109,7 +109,7 @@ console.log x.to-string!
 ### Templating
 
 To generate content based on data, you can pass a function to any setter call.
-When a tag's `toString` is called, the functions passed to its setters before
+When a tag's `to-string` is called, the functions passed to its setters before
 are called with its arguments to produce the final value.
 
 ```ls
@@ -132,8 +132,8 @@ not contain two consecutive hyphens (`--`). [The XML spec requires it][6]. For
 performance reasons, `whatxml` doesn't enforce that.
 
 [`CDATA`-sections][7] and XML declarations (`?xml version="1.0"?>` and such)
-aren't supported (yet). You can always string-concatenate declarations onto the
-front or hack CDATA in as `.raw` text.
+**aren't supported** (yet). You can always string-concatenate declarations onto
+the front or hack CDATA in as `.raw` text.
 
 ## Related libraries
 
