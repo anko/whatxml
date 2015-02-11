@@ -35,14 +35,14 @@ x = whatxml \html
 console.log x.to-string!
 
 
-x2 = whatxml \html
-    .. \head
-        .. \title ._ "My page"
-        ..self-closing \link rel : \stylesheet type : \text/css href : \main.css
-    .. \body
-        .. \p ._ "Here's a paragraph."
+x = whatxml \html
+  .. \head
+    .. \title ._ "My page"
+    ..self-closing \link rel : \stylesheet type : \text/css href : \main.css
+  .. \body
+    .. \p ._ (.content)
 
-console.log x2.to-string!
+console.log x.to-string { content : "Here's a paragraph." }
 
 
 greeting = whatxml \p

@@ -1,104 +1,84 @@
 # whatxml
 
-DRY `(X|HT|XHT)ML` templating with [LiveScript][1]'s [cascade][2] syntax.
+XML/HTML templating with [LiveScript][1]'s [cascade][2] syntax.
 
     npm install whatxml
 
-## Basically
-
-You write
+In short, write this:
 
 ```ls
 x = whatxml \html
-    .. \head
-        .. \title ._ "My page"
-        ..self-closing \link rel : \stylesheet type : \text/css href : \main.css
-    .. \body
-        .. \p ._ "Here's a paragraph."
+  .. \head
+    .. \title ._ "My page"
+    ..self-closing \link rel : \stylesheet type : \text/css href : \main.css
+  .. \body
+    .. \p ._ (.content)
 
-console.log x.to-string!
+console.log x.to-string { content : "Here's a paragraph." }
 ```
 
-and you get
+To get this:
 
 ```html
 <html><head><title>My page</title><link rel="stylesheet" type="text/css" href="main.css" /></head><body><p>Here&#x27;s a paragraph.</p></body></html>
 ```
 
-You can also pass a function to anything and decide its based on what's passed
-in to the `to-string` call, a lot like `.attr` in [D3][3]. (Read on for the
-details.)
+You can pass a function to any setter, which decides the final value based on
+what's passed in to the `to-string` call. (It's a lot like [D3][3]'s `.attr`.)
 
 ## API summary
 
  - `.. <string> [<attr-object>]` adds a tag (with optional attributes)
- - `..self-closing <string> [<attr-object>]` same, but self-closing
+ - `..self-closing <string> [<attr-object>]` same, but a self-closing tag
  - `.. <object>` sets attributes
  - `.._ <string>` adds text
  - `..raw <string>` adds text (without escaping it)
  - `..comment <string>` adds a comment
 
-`toString` renders the tag and, recursively, its child tags too.
+`to-string` recursively renders that tag's tree.
 
 ## API tutorial
 
 ### Basics
 
-Make a root tag.
+Create a root tag, call it with a `string` to create child tags, with an
+`object` to add attributes or call `_` to add text between the tags.
 
 ```ls
-p = whatxml \person
-console.log p.to-string!
-```
-```xml
-<person></person>
-```
-
-- - -
-
-Call it with a `string` to create child tags, with an `object` to add
-attributes or call `_` to add text between the tags.
-
-```ls
-gandalf = whatxml \person
+gandalf = whatxml \person      # Create a root tag.
   .. { profession : \wizard }  # Set an attribute.
-  .. \name                     # Add a child node
-    .._ "Gandalf"              # ... and put some text in it.
+  .. \name                     # Add a child node.
+    .._ "Gandalf"              # Put text in it.
 console.log gandalf.to-string!
 ```
 ```xml
 <person profession="wizard"><name>Gandalf</name></person>
 ```
 
-- - -
-
-*Shortcut*: Pass object of attributes as second argument when creating a tag.
+Handy shortcut:  When creating a tag, pass attributes as an object.
 
 ```ls
 t = whatxml \tower lean : "3.99"
-    .. \place city : "Pisa", country : "Italy"
+  .. \place city : "Pisa", country : "Italy"
 console.log t.to-string!
 ```
 ```xml
 <tower lean="3.99"><place city="Pisa" country="Italy"></place></tower>
 ```
 
-- - -
-
-You can add `self-closing` tags and `comment`s too.
+Add self-closing tags and comments.
 
 ```ls
 x = whatxml \a
-    ..self-closing \b
-    ..comment "what"
+  ..self-closing \b
+  ..comment "what"
 ```
 ```xml
 <a><b /><!--what--></a>
 ```
 
-- - -
-
-If you need attributes without a value attached, set it to `true`:
+You can also have stand-alone attributes without a value.  ([This is invalid
+XML][4], but is really handy for HTML-y things.)
 
 ```ls
 x = whatxml \input { +selected }
@@ -107,11 +87,8 @@ x = whatxml \input { +selected }
 <input selected></input>
 ```
 
-- - -
-
-All text is escaped automatically, but you can bypass that by calling `raw`.
-(This lets you include text you know is escaped already, e.g. from
-[`marked`][4].)
+Text is escaped automatically, but you can bypass that if you know you've got
+already-escaped text (e.g. from some generator like [`marked`][5].)
 
 ```ls
 greeting = whatxml \p
@@ -130,9 +107,9 @@ console.log x.to-string!
 
 ### Templating
 
-To generate content based on data, you can also pass a function to any setter
-call. When `toString` is called on a tag, the functions passed before are
-called with those arguments.
+To generate content based on data, you can pass a function to any setter call.
+When a tag's `toString` is called, the functions passed to its setters before
+are called with its arguments to produce the final value.
 
 ```ls
 link = whatxml \a href : (.href)
@@ -149,34 +126,40 @@ console.log link.to-string name : \runescape href : "http://runescape.com"
 
 ## Limitations
 
-If you're going to add XML comments, **make sure they're valid text**: Comment
-tags may not contain two consecutive hyphens (`--`). [The XML spec requires
-it][5]. For performance reasons, `whatxml` doesn't enforce that.
+If you're going to add XML comments, **check they're valid**: Comment tags may
+not contain two consecutive hyphens (`--`). [The XML spec requires it][6]. For
+performance reasons, `whatxml` doesn't enforce that.
+
+[`CDATA`-sections][7] and XML declarations (`?xml version="1.0"?>` and such)
+aren't supported (yet). You can always string-concatenate declarations onto the
+front or hack CDATA in as `.raw` text.
 
 ## Related libraries
 
-This library wants to be a serious general-purpose [LiveScript]-based
-templating engine.
+This library aims to be a serious general-purpose templating engine for
+[LiveScript][8].
 
 Existing attempts have their flaws:
 
- - [`live-templ`][6] is the closest to my goals, but its
+ - [`live-templ`][9] came closest to my goals, but its
    objects-in-nested-arrays base is too rigid to handle comments, raw text data
-   or self-closing tags. It provides no way to combine the template with input
-   data.
- - [`create-xml-ls`][7]' syntax is object-based: It can't represent two tags
-   with the same name on the same level of nesting…
- - [`htmls`][8] supports only the HTML tag set and treats template code as a
-   second-class citizen: They're stored as strings, later parsed and
-   transformed to actual code, then `eval`'d. (The readme makes it very clear
-   it's a for-fun project though.)
+   or self-closing tags. It also provides no way to combine a template with
+   input data.
+ - [`create-xml-ls`][10] is object-based, so it can't represent two tags with
+   the same name on the same level of nesting…
+ - [`htmls`][11] supports only the base HTML tag set and treats template code as
+   strings which are later parsed and transformed to actual code, then
+   `eval`'d.
 
 
 [1]: http://livescript.net/
 [2]: http://livescript.net/#property-access-cascades
 [3]: http://d3js.org/
-[4]: https://github.com/chjj/marked
-[5]: http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments
-[6]: https://www.npmjs.org/package/live-tmpl
-[7]: https://www.npmjs.org/package/create-xml-ls
-[8]: https://www.npmjs.org/package/htmls
+[4]: http://stackoverflow.com/questions/6926442/is-an-xml-attribute-without-value-valid
+[5]: https://github.com/chjj/marked
+[6]: http://www.w3.org/TR/2006/REC-xml11-20060816/#sec-comments
+[7]: http://en.wikipedia.org/wiki/CDATA
+[8]: http://livescript.net/
+[9]: https://www.npmjs.org/package/live-tmpl
+[10]: https://www.npmjs.org/package/create-xml-ls
+[11]: https://www.npmjs.org/package/htmls
