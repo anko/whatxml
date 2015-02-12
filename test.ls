@@ -13,74 +13,73 @@
 # [3]: http://testanything.org/consumers.html
 # [4]: https://www.npmjs.org/package/faucet
 
-test = (name, test-func) ->
+test = (name, func) ->
   (require \tape) name, (t) ->
-
-    # Make `this` refer to tape's asserts
-    test-func.call t
-
-    # Automatically end tests
-    t.end!
+    func.call t   # Make `this` refer to tape's asserts
+    t.end!        # Automatically end tests
 
 
 whatxml = require "./index.ls"
 
-test "wants string name" ->
-    (-> whatxml!) `@throws` Error
-    (-> whatxml true) `@throws` Error
+test "errors on bad tag name" ->
+  [ (-> whatxml!)
+    (-> whatxml true)
+    (-> whatxml {})
+    (-> whatxml ->) ].map (`@throws` Error)
 
-test "nesting" ->
-    x = whatxml \outer
-      .. \b
-      .. \c
-        .. \d
-      .. \e
-    x.to-string! `@equals` "<outer>
+test "tag nesting" ->
+  whatxml \outer
+    .. \b
+    .. \c
+      .. \d
+    .. \e
+    ..to-string! `@equals` "<outer>
                               <b></b>
                               <c><d></d></c>
                               <e></e>
                             </outer>"
 
 test "comments" ->
-  x = whatxml \anything
+  whatxml \anything
     ..comment "Ninjas were here!"
-  x.to-string! `@equals` "<anything>
-                            <!--Ninjas were here!-->
-                          </anything>"
+    ..to-string! `@equals` "<anything>
+                              <!--Ninjas were here!-->
+                            </anything>"
 
-test "adding attributes in tag spec" ->
-  x = whatxml \a id : \gh-link .to-string!
-  x.to-string! `@equals` "<a id=\"gh-link\"></a>"
-test "adding attributes by calling `attr`" ->
-  x = whatxml \a
+test "adding attributes when constructing tag" ->
+  whatxml \a id : \gh-link
+    ..to-string! `@equals` "<a id=\"gh-link\"></a>"
+
+test "adding attributes with `attr` call" ->
+  whatxml \a
     ..attr \id \gh-link
-  x.to-string! `@equals` "<a id=\"gh-link\"></a>"
+    ..to-string! `@equals` "<a id=\"gh-link\"></a>"
 test "adding attributes by calling with object" ->
-  x = whatxml \a
+  whatxml \a
     .. id : \gh-link
-  x.to-string! `@equals` "<a id=\"gh-link\"></a>"
+    ..to-string! `@equals` "<a id=\"gh-link\"></a>"
 
 test "adding standalone attribute" ->
-  x = whatxml \input selected : true
-  x.to-string! `@equals` "<input selected></input>"
+  whatxml \input selected : true
+    ..to-string! `@equals` "<input selected></input>"
 
 test "adding text" ->
-  x = whatxml \p
+  whatxml \p
     .._ "whatever text"
-  x.to-string! `@equals` "<p>whatever text</p>"
+    ..to-string! `@equals` "<p>whatever text</p>"
 
 test "self-closing tags" ->
-  x = whatxml \a
+  whatxml \a
     ..self-closing \b
-  x.to-string! `@equals` "<a><b /></a>"
+    ..to-string! `@equals` "<a><b /></a>"
 
 test "self-closing tag attributes" ->
-  x = whatxml \a
+  whatxml \a
     ..self-closing \b hi : \there
-  x.to-string! `@equals` "<a><b hi=\"there\" /></a>"
+    ..to-string! `@equals` "<a><b hi=\"there\" /></a>"
 
 test "self-closing tag can't have children" ->
-  x = whatxml \a
+  whatxml \a
     ..self-closing \b
       .. \c `@throws` Error
 
@@ -89,32 +88,35 @@ test "self-closing root tag" ->
     ..to-string! `@equals` "<a attr=\"b\" />"
 
 test "content text escaping" ->
-  x = whatxml \a
+  whatxml \a
     .._ "x < y"
-  x.to-string! `@equals` "<a>x &\#x3C; y</a>"
+    ..to-string! `@equals` "<a>x &\#x3C; y</a>"
 
 test "raw content text" ->
-  x = whatxml \a
+  whatxml \a
     ..raw "<stuff attr=\"a\">within</stuff>"
-  x.to-string! `@equals` "<a><stuff attr=\"a\">within</stuff></a>"
+    ..to-string! `@equals` "<a><stuff attr=\"a\">within</stuff></a>"
 
 test "attributes are templateable" ->
-  x = whatxml \a
+  whatxml \a
     .. test : -> it # identity function
-  (x.to-string "hi") `@equals` "<a test=\"hi\"></a>"
+    ..to-string "hi"
+      .. `@equals` "<a test=\"hi\"></a>"
 
 test "texts are templateable" ->
-  x = whatxml \a
+  whatxml \a
     .._ -> it # identity function
-  (x.to-string "hi") `@equals` "<a>hi</a>"
+    ..to-string "hi"
+      .. `@equals` "<a>hi</a>"
 
 test "comments are templateable" ->
-  x = whatxml \a
+  whatxml \a
     ..comment -> it # identity function
-  (x.to-string "hi") `@equals` "<a><!--hi--></a>"
+    ..to-string "hi"
+      .. `@equals` "<a><!--hi--></a>"
 
-test "templates are nestable" ->
-  page = whatxml \html
+test "templates work in nested contexts" ->
+  whatxml \html
     .. \head
       .. \title ._ (.title)
     .. \body
@@ -122,16 +124,16 @@ test "templates are nestable" ->
         .. \h1 ._ (.title)
         ..raw (.content)
 
-  rendered-page = page.to-string title : "Blog post" content : "<p>Look, I write!</p>"
-    .. `@equals` "<html>
-                    <head><title>Blog post</title></head>
-                    <body>
-                      <div id=\"content\">
-                        <h1>Blog post</h1>
-                        <p>Look, I write!</p>
-                      </div>
-                    </body>
-                  </html>"
+    ..to-string title : "Blog post" content : "<p>Look, I write!</p>"
+      .. `@equals` "<html>
+                      <head><title>Blog post</title></head>
+                      <body>
+                        <div id=\"content\">
+                          <h1>Blog post</h1>
+                          <p>Look, I write!</p>
+                        </div>
+                      </body>
+                    </html>"
 
 test "templates are reusable" ->
   book = whatxml \book
