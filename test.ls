@@ -59,6 +59,33 @@ test "adding attributes by calling with object" ->
     .. id : \gh-link
     ..to-string! `@equals` "<a id=\"gh-link\"></a>"
 
+test "attributes are overwritten if set again" ->
+  whatxml \srw
+    .. track : "Ace Attacker"
+    .. track : "Trombe!"
+    ..to-string! `@equals` "<srw track=\"Trombe!\"></srw>"
+test "text is appended if set again" ->
+  whatxml \greeting
+    .._ "Hello "
+    .._ "world!"
+    ..to-string! `@equals` "<greeting>Hello world!</greeting>"
+
+test "comments are always appended even if called again" ->
+  whatxml \x
+    ..comment "a"
+    ..comment "b"
+    ..to-string! `@equals` "<x><!--a--><!--b--></x>"
+test "comments are always appended even if called again" ->
+  whatxml \x
+    ..comment "a"
+    ..comment "b"
+    ..to-string! `@equals` "<x><!--a--><!--b--></x>"
+test "raw text is always appended even if called again" ->
+  whatxml \x
+    ..raw "a"
+    ..raw "b"
+    ..to-string! `@equals` "<x>ab</x>"
+
 test "adding standalone attribute" ->
   whatxml \input selected : true
     ..to-string! `@equals` "<input selected></input>"
