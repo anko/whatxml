@@ -22,8 +22,7 @@ test = (name, func) ->
 whatxml = require "./index.ls"
 
 test "errors on bad tag name" ->
-  [ (-> whatxml!)
-    (-> whatxml true)
+  [ (-> whatxml true)
     (-> whatxml {})
     (-> whatxml ->) ].map (`@throws` Error)
 
@@ -148,6 +147,23 @@ test "raw content text" ->
   whatxml \a
     ..raw "<stuff attr=\"a\">within</stuff>"
     ..to-string! `@equals` "<a><stuff attr=\"a\">within</stuff></a>"
+
+test "can have multiple top-level tags" ->
+  whatxml!
+    .. \a
+    .. \b
+    ..to-string! `@equals` "<a></a><b></b>"
+
+test "anonymous top-level tag can't have attributes" ->
+  (-> whatxml! attr : "hi") `@throws` Error
+
+test "anonymous-top-level tag can have text too" ->
+  whatxml!
+    ..comment "hi"
+    .._ "text"
+    ..raw "<hr />"
+    .. \a
+    ..to-string! `@equals` "<!--hi-->text<hr /><a></a>"
 
 test "attributes are templateable" ->
   whatxml \a

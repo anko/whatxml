@@ -111,6 +111,20 @@ console.log x.to-string!
 <p><em>I know this is properly escaped already</em></p>
 ```
 
+You can have multiple top-level tags (useful for calling whatxml inside a
+template).
+
+```ls
+x = whatxml!
+  .. \a
+  .. \b
+console.log x.to-string!
+```
+
+```xml
+<a></a><b></b>
+```
+
 ### Templating
 
 To generate content based on data, you can pass a function to any setter call.

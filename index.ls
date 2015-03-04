@@ -8,9 +8,13 @@ require! \he # for character entity coding
 # ------------------------
 # Each is a closure with methods for modifying its attributes or adding child
 # tags or other content.
-new-tag = (name, init-attributes={} self-closing=false) ->
+new-tag = (name, init-attributes={} type={}) ->
 
-  throw Error "Tag name must be a String" unless typeof name is \string
+  anonymous    = type.anonymous || false
+  self-closing = type.self-closing || false
+
+  unless anonymous
+    throw Error "Tag name must be a String" unless typeof name is \string
 
   attributes = []
   children   = []
@@ -19,6 +23,7 @@ new-tag = (name, init-attributes={} self-closing=false) ->
     if v in [ false null undefined ] then false else true
 
   set-attribute = (k, v) ->
+    throw new Error "Anonymous tags may not have attributes" if anonymous
     if keep-attribute-value v then attributes[k] = v
     else delete attributes[k]
   import-attributes = -> for k,v of it then set-attribute k, v
@@ -42,27 +47,31 @@ new-tag = (name, init-attributes={} self-closing=false) ->
 
   render = (input) ->
 
-    # Resolve function-containing attributes
-    s-attributes = attributes
-      |> obj-map ->
-        | typeof it is \function =>
-          v = it input
-          if keep-attribute-value v then v else undefined
-        | otherwise => it
-      |> obj-filter (?)
-      |> obj-to-pairs
-      |> map ([key,value]) ->
-        | value is true => key                           # lone key
-        | otherwise     => "#key=\"#{he.encode value}\"" # valued key
-      |> unwords
+    stringify-children = -> children .map (-> it input) .reduce (+), ""
 
-    # Prepend space if necessary
-    if s-attributes.length then s-attributes = " #s-attributes"
+    if anonymous then stringify-children!
+    else
+      # Resolve function-containing attributes
+      s-attributes = attributes
+        |> obj-map ->
+          | typeof it is \function =>
+            v = it input
+            if keep-attribute-value v then v else undefined
+          | otherwise => it
+        |> obj-filter (?)
+        |> obj-to-pairs
+        |> map ([key,value]) ->
+          | value is true => key                           # lone key
+          | otherwise     => "#key=\"#{he.encode value}\"" # valued key
+        |> unwords
 
-    s-children = children .map (-> it input) .reduce (+), ""
+      # Prepend space if necessary
+      if s-attributes.length then s-attributes = " #s-attributes"
 
-    if self-closing then "<#name#s-attributes />"
-    else                 "<#name#s-attributes>#s-children</#name>"
+      s-children = stringify-children!
+
+      if self-closing then "<#name#s-attributes />"
+      else                 "<#name#s-attributes>#s-children</#name>"
 
   render
     ..add-text    = -> die-if-self-closing! ; children.push text-content it
@@ -84,14 +93,18 @@ new-tag = (name, init-attributes={} self-closing=false) ->
 wrap = (tag) ->
   ((first-arg) ->
     switch typeof first-arg
-      | \string => wrap tag.add-child &0, &1, false
+      | \string => wrap tag.add-child &0, &1
       | \object => tag.import-attributes ... ; this )
     ..to-string    = tag                       .bind!
     .._            = tag.add-text              .bind!
     ..raw          = tag.add-raw               .bind!
     ..attr         = tag.set-attribute         .bind!
     ..comment      = tag.add-comment           .bind!
-    ..self-closing = -> wrap tag.add-child &0, &1, true
+    ..self-closing = -> wrap tag.add-child &0, &1, { +self-closing }
 
-module.exports = wrap << new-tag
-  ..self-closing = -> wrap new-tag &0, &1, true
+module.exports = ((first-arg)->
+  if typeof first-arg is \undefined
+    wrap new-tag &0, &1, { +anonymous }
+  else
+    wrap new-tag &0, &1 )
+  ..self-closing = -> wrap new-tag &0, &1, { +self-closing }
