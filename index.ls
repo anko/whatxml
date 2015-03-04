@@ -5,12 +5,20 @@ require! \he # for character entity coding
 # ------------------------
 # Each is a closure with methods for modifying its attributes or adding child
 # tags or other content.
-new-tag = (name, attributes={} self-closing=false) ->
+new-tag = (name, init-attributes={} self-closing=false) ->
 
   throw Error "Tag name must be a String" unless typeof name is \string
 
-  attributes = ^^attributes
+  attributes = []
   children   = []
+
+  set-attribute = (k, v) ->
+    if v in [ false null undefined ]
+      delete attributes[k]
+    else attributes[k] = v
+  import-attributes = -> for k,v of it then set-attribute k, v
+
+  import-attributes init-attributes
 
   die-if-self-closing = ->
     throw new Error "Self-closing tags may not have children" if self-closing
@@ -51,8 +59,8 @@ new-tag = (name, attributes={} self-closing=false) ->
     ..add-text    = -> die-if-self-closing! ; children.push text-content it
     ..add-raw     = -> die-if-self-closing! ; children.push raw-content it
     ..add-comment = -> die-if-self-closing! ; children.push comment-content it
-    ..set-attribute     = (k, v=true) -> attributes[k] = v
-    ..import-attributes = -> attributes <<< it
+    ..set-attribute     = set-attribute
+    ..import-attributes = import-attributes
     ..add-child = ->
       die-if-self-closing!
       new-tag.apply this, arguments

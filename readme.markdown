@@ -88,6 +88,10 @@ whatxml \input { +selected }
 <input selected></input>
 ```
 
+Strings and `true` are acceptable attribute values. Setting attributes again
+overwrites the current value. Setting attributes to `false`, `null` or
+`undefined` removes that attribute, if present.
+
 Text is escaped automatically, but you can bypass that if you have
 ready-escaped text (e.g. from a generator like [`marked`][5]).
 

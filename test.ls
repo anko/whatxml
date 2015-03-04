@@ -64,6 +64,22 @@ test "attributes are overwritten if set again" ->
     .. track : "Ace Attacker"
     .. track : "Trombe!"
     ..to-string! `@equals` "<srw track=\"Trombe!\"></srw>"
+
+test "setting a non-existent attr to false, null or undefined does nothing" ->
+  [ false, null, undefined ].for-each ~>
+    whatxml \a
+      .. x : it
+      ..to-string! `@equals` "<a></a>"
+test "attributes are overwritten if set to false, null or undefined" ->
+  [ false, null, undefined ].for-each ~>
+    whatxml \a
+      .. x : \hi
+      .. x : it
+      ..to-string! `@equals` "<a></a>"
+test "attributes with empty strings are OK" ->
+  whatxml \a x : ""
+    ..to-string! `@equals` "<a x=\"\"></a>"
+
 test "text is appended if set again" ->
   whatxml \greeting
     .._ "Hello "
