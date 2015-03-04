@@ -130,9 +130,10 @@ test "self-closing tag attributes" ->
     ..to-string! `@equals` "<a><b hi=\"there\" /></a>"
 
 test "self-closing tag can't have children" ->
-  whatxml \a
-    ..self-closing \b
-      .. \c `@throws` Error
+  (->
+    whatxml \a
+      ..self-closing \b
+        .. \c ) `@throws` Error
 
 test "self-closing root tag" ->
   whatxml.self-closing \a attr : \b
@@ -164,6 +165,9 @@ test "anonymous-top-level tag can have text too" ->
     ..raw "<hr />"
     .. \a
     ..to-string! `@equals` "<!--hi-->text<hr /><a></a>"
+
+test "calling a non-root tag with no args errors" ->
+  (-> (whatxml \a)!) `@throws` Error
 
 test "attributes are templateable" ->
   whatxml \a

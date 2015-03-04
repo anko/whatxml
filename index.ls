@@ -94,7 +94,9 @@ wrap = (tag) ->
   ((first-arg) ->
     switch typeof first-arg
       | \string => wrap tag.add-child &0, &1
-      | \object => tag.import-attributes ... ; this )
+      | \object => tag.import-attributes ... ; this
+      | otherwise =>
+        throw Error "Expected string or object argument to tag creation" )
     ..to-string    = tag                       .bind!
     .._            = tag.add-text              .bind!
     ..raw          = tag.add-raw               .bind!
