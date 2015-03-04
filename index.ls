@@ -1,4 +1,7 @@
-{ obj-to-pairs, map, unwords, Obj:map : obj-map } = require \prelude-ls
+{
+  obj-to-pairs, map, unwords,
+  Obj: { map : obj-map, filter : obj-filter }
+} = require \prelude-ls
 require! \he # for character entity coding
 
 # Internal tag abstraction
@@ -12,10 +15,12 @@ new-tag = (name, init-attributes={} self-closing=false) ->
   attributes = []
   children   = []
 
+  keep-attribute-value = (v) ->
+    if v in [ false null undefined ] then false else true
+
   set-attribute = (k, v) ->
-    if v in [ false null undefined ]
-      delete attributes[k]
-    else attributes[k] = v
+    if keep-attribute-value v then attributes[k] = v
+    else delete attributes[k]
   import-attributes = -> for k,v of it then set-attribute k, v
 
   import-attributes init-attributes
@@ -40,13 +45,17 @@ new-tag = (name, init-attributes={} self-closing=false) ->
     # Resolve function-containing attributes
     s-attributes = attributes
       |> obj-map ->
-        | typeof it is \function => it input
-        | otherwise              => it
+        | typeof it is \function =>
+          v = it input
+          if keep-attribute-value v then v else undefined
+        | otherwise => it
+      |> obj-filter (?)
       |> obj-to-pairs
       |> map ([key,value]) ->
         | value is true => key                           # lone key
         | otherwise     => "#key=\"#{he.encode value}\"" # valued key
       |> unwords
+
     # Prepend space if necessary
     if s-attributes.length then s-attributes = " #s-attributes"
 

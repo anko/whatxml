@@ -76,6 +76,15 @@ test "attributes are overwritten if set to false, null or undefined" ->
       .. x : \hi
       .. x : it
       ..to-string! `@equals` "<a></a>"
+test "templates can also set attributes false, null or undefined" ->
+  templ = -> return it # identity function
+  [ false, null, undefined ].for-each ~>
+    whatxml \a
+      .. x : "hi"
+      .. x : templ
+      ..to-string it
+        .. `@equals` "<a></a>"
+
 test "attributes with empty strings are OK" ->
   whatxml \a x : ""
     ..to-string! `@equals` "<a x=\"\"></a>"
@@ -189,3 +198,11 @@ test "templates are reusable" ->
 
   b2 = book.to-string title : "Neuromancer" author : "William Gibson" year : "1984"
     .. `@equals` "<book year=\"1984\"><title>Neuromancer</title><author>William Gibson</author></book>"
+
+test "templates are reusable, also with less attributes later" ->
+  character = whatxml \vocaloid name : (.name), scarf : (.scarf)
+  character
+    ..to-string { name : "KAITO", scarf : \blue }
+      .. `@equals` "<vocaloid name=\"KAITO\" scarf=\"blue\"></vocaloid>"
+    ..to-string { name : "Hatsune Miku" }
+      .. `@equals` "<vocaloid name=\"Hatsune Miku\"></vocaloid>"
