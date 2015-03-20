@@ -150,9 +150,8 @@ If you're going to add XML comments, **check they're valid**: Comment tags may
 not contain two consecutive hyphens (`--`). [The XML spec requires it][6]. For
 performance reasons, `whatxml` doesn't enforce that.
 
-[`CDATA`-sections][7] and XML declarations (`?xml version="1.0"?>` and such)
-**aren't supported** (yet). You can always string-concatenate declarations onto
-the front or hack CDATA in as `.raw` text.
+[`CDATA`-sections][7] and XML declarations (`<?xml version="1.0"?>` and such)
+aren't supported, but you can happily add them using `raw`.
 
 ## Related libraries
 
