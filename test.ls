@@ -21,7 +21,7 @@ test = (name, func) ->
 
 whatxml = require "./index.ls"
 
-test "errors on bad tag name" ->
+test "bad tag name errors" ->
   [ (-> whatxml true)
     (-> whatxml {})
     (-> whatxml ->) ].map (`@throws` Error)
@@ -45,14 +45,15 @@ test "comments" ->
                               <!--Ninjas were here!-->
                             </anything>"
 
-test "adding attributes when constructing tag" ->
+test "adding attributes from tag constructor" ->
   whatxml \a id : \gh-link
     ..to-string! `@equals` "<a id=\"gh-link\"></a>"
 
-test "adding attributes with `attr` call" ->
+test "adding attributes by calling `attr`" ->
   whatxml \a
     ..attr \id \gh-link
     ..to-string! `@equals` "<a id=\"gh-link\"></a>"
+
 test "adding attributes by calling with object" ->
   whatxml \a
     .. id : \gh-link
@@ -69,13 +70,13 @@ test "setting a non-existent attr to false, null or undefined does nothing" ->
     whatxml \a
       .. x : it
       ..to-string! `@equals` "<a></a>"
-test "attributes are overwritten if set to false, null or undefined" ->
+test "attributes are removed if set to false, null or undefined" ->
   [ false, null, undefined ].for-each ~>
     whatxml \a
       .. x : \hi
       .. x : it
       ..to-string! `@equals` "<a></a>"
-test "templates can also set attributes false, null or undefined" ->
+test "templates can also remove attributes with false, null or undefined" ->
   templ = -> return it # identity function
   [ false, null, undefined ].for-each ~>
     whatxml \a
@@ -84,22 +85,17 @@ test "templates can also set attributes false, null or undefined" ->
       ..to-string it
         .. `@equals` "<a></a>"
 
-test "attributes with empty strings are OK" ->
+test "attributes with empty strings work" ->
   whatxml \a x : ""
     ..to-string! `@equals` "<a x=\"\"></a>"
 
-test "text is appended if set again" ->
+test "text is appended if called again" ->
   whatxml \greeting
     .._ "Hello "
     .._ "world!"
     ..to-string! `@equals` "<greeting>Hello world!</greeting>"
 
-test "comments are always appended even if called again" ->
-  whatxml \x
-    ..comment "a"
-    ..comment "b"
-    ..to-string! `@equals` "<x><!--a--><!--b--></x>"
-test "comments are always appended even if called again" ->
+test "comments are always appended separately even when called again" ->
   whatxml \x
     ..comment "a"
     ..comment "b"
@@ -110,7 +106,7 @@ test "raw text is always appended even if called again" ->
     ..raw "b"
     ..to-string! `@equals` "<x>ab</x>"
 
-test "adding standalone attribute" ->
+test "standalone value-less attribute" ->
   whatxml \input selected : true
     ..to-string! `@equals` "<input selected></input>"
 
@@ -149,7 +145,7 @@ test "raw content text" ->
     ..raw "<stuff attr=\"a\">within</stuff>"
     ..to-string! `@equals` "<a><stuff attr=\"a\">within</stuff></a>"
 
-test "can have multiple top-level tags" ->
+test "multiple root-level tags" ->
   whatxml!
     .. \a
     .. \b
@@ -158,7 +154,7 @@ test "can have multiple top-level tags" ->
 test "anonymous top-level tag can't have attributes" ->
   (-> whatxml! attr : "hi") `@throws` Error
 
-test "anonymous-top-level tag can have text too" ->
+test "anonymous top-level tag can have text" ->
   whatxml!
     ..comment "hi"
     .._ "text"
@@ -166,7 +162,7 @@ test "anonymous-top-level tag can have text too" ->
     .. \a
     ..to-string! `@equals` "<!--hi-->text<hr /><a></a>"
 
-test "calling a non-root tag with no args errors" ->
+test "calling a non-root tag without args is an error" ->
   (-> (whatxml \a)!) `@throws` Error
 
 test "attributes are templateable" ->
@@ -187,7 +183,7 @@ test "comments are templateable" ->
     ..to-string "hi"
       .. `@equals` "<a><!--hi--></a>"
 
-test "templates work in nested contexts" ->
+test "templates work within nesting" ->
   whatxml \html
     .. \head
       .. \title ._ (.title)
