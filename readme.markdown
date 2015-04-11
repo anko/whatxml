@@ -146,9 +146,9 @@ console.log link.to-string name : \runescape href : "http://runescape.com"
 
 ## Limitations
 
-If you're going to add XML comments, **check they're valid**: Comment tags may
-not contain two consecutive hyphens (`--`). [The XML spec requires it][6]. For
-performance reasons, `whatxml` doesn't enforce that.
+If you're going to add XML comments, check that they're [valid by the XML
+spec][6]: They may not contain two consecutive hyphens (`--`). For performance
+reasons, `whatxml` doesn't check.
 
 [`CDATA`-sections][7] and XML declarations (`<?xml version="1.0"?>` and such)
 aren't supported, but you can happily add them using `raw`.
