@@ -2,6 +2,8 @@
 
 XML/HTML templating with [LiveScript][1]'s [cascade][2] syntax.
 
+[![Build Status](https://travis-ci.org/anko/whatxml.svg?branch=master)](https://travis-ci.org/anko/whatxml)
+
     npm install whatxml
 
 In short, write this:
