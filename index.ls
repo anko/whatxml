@@ -57,7 +57,12 @@ new-tag = (name, init-attributes={} type={}) ->
           | typeof it is \function =>
             v = it input
             if keep-attribute-value v then v else undefined
-          | otherwise => it
+          | otherwise =>
+            switch
+            | typeof it is \boolean => it
+            | typeof it isnt \string =>
+              throw Error "Unexpected non-string attribute `#it`"
+            | otherwise => it
         |> obj-filter (?)
         |> obj-to-pairs
         |> map ([key,value]) ->

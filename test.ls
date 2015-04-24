@@ -59,6 +59,13 @@ test "adding attributes by calling with object" ->
     .. id : \gh-link
     ..to-string! `@equals` "<a id=\"gh-link\"></a>"
 
+test "errors on render when attribute has invalid type" ->
+  @throws do
+    -> whatxml \a
+      .. id : 10
+      ..to-string!
+    Error
+
 test "attributes are overwritten if set again" ->
   whatxml \srw
     .. track : "Ace Attacker"
