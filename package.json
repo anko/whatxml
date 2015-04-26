@@ -10,7 +10,8 @@
     "XHTML",
     "HTML",
     "syntax",
-    "sugar"
+    "sugar",
+    "template"
   ],
   "repository": {
     "type": "git",
