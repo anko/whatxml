@@ -8,8 +8,14 @@ XML/HTML templating with [LiveScript][1]'s [cascade][2] syntax.
 &emsp;
 [![npm dependencies](https://img.shields.io/david/anko/whatxml.svg?style=flat-square)](https://david-dm.org/anko/whatxml)
 
-In short, write this:
-
+<!-- !test program
+# Prepend module import statement to input
+# Remove trailing newline from output
+sed '1s/^/whatxml = require ".\\/index.ls" ;/' \
+| lsc \-\-stdin \
+| head -c -1
+-->
+<!-- !test in 1 -->
 ```ls
 x = whatxml \html
   .. \head
@@ -23,6 +29,7 @@ console.log x.to-string { content : "Here's a paragraph." }
 
 To get this:
 
+<!-- !test out 1 -->
 ```html
 <html><head><title>My page</title><link rel="stylesheet" type="text/css" href="main.css" /></head><body><p>Here&#x27;s a paragraph.</p></body></html>
 ```
@@ -48,6 +55,7 @@ what's passed in to the `to-string` call. (It's a lot like [D3][3]'s `.attr`.)
 Create a root tag, call it with a `string` to create child tags, with an
 `object` to add attributes or call `_` to add text between the tags.
 
+<!-- !test in 2 -->
 ```ls
 gandalf = whatxml \person      # Create a root tag.
   .. { profession : \wizard }  # Set an attribute.
@@ -55,28 +63,34 @@ gandalf = whatxml \person      # Create a root tag.
     .._ "Gandalf"              # Put text in it.
 console.log gandalf.to-string!
 ```
+<!-- !test out 2 -->
 ```xml
 <person profession="wizard"><name>Gandalf</name></person>
 ```
 
 Handy shortcut:  When creating a tag, pass attributes as an object.
 
+<!-- !test in 3 -->
 ```ls
 t = whatxml \tower lean : "3.99"
   .. \place city : "Pisa", country : "Italy"
 console.log t.to-string!
 ```
+<!-- !test out 3 -->
 ```xml
 <tower lean="3.99"><place city="Pisa" country="Italy"></place></tower>
 ```
 
 Add self-closing tags and comments.
 
+<!-- !test in 4 -->
 ```ls
 x = whatxml \a
   ..self-closing \b
   ..comment "what"
+console.log x.to-string!
 ```
+<!-- !test out 4 -->
 ```xml
 <a><b /><!--what--></a>
 ```
@@ -84,10 +98,12 @@ x = whatxml \a
 You can have stand-alone attributes without a value by setting them to `true`.
 ([It's invalid XML][4], but fine in HTML.)
 
+<!-- !test in 5 -->
 ```ls
 whatxml \input { +selected }
   ..to-string! |> console.log
 ```
+<!-- !test out 5 -->
 ```ls
 <input selected></input>
 ```
@@ -100,6 +116,7 @@ present.
 Text is escaped automatically, but you can bypass that if you have
 ready-escaped text (e.g. from a generator like [`marked`][5]).
 
+<!-- !test in 6 -->
 ```ls
 greeting = whatxml \p
   .._ "What's up <3"
@@ -110,14 +127,16 @@ x = whatxml \p
 console.log x.to-string!
 ```
 
+<!-- !test out 6 -->
 ```xml
-<p>What&#39;s up &#60;3</p>
+<p>What&#x27;s up &#x3C;3</p>
 <p><em>I know this is properly escaped already</em></p>
 ```
 
 You can have multiple top-level tags (useful for calling whatxml inside a
 template).
 
+<!-- !test in 7 -->
 ```ls
 x = whatxml!
   .. \a
@@ -125,6 +144,7 @@ x = whatxml!
 console.log x.to-string!
 ```
 
+<!-- !test out 7 -->
 ```xml
 <a></a><b></b>
 ```
@@ -135,6 +155,7 @@ To generate content based on data, you can pass a function to any setter call.
 When a tag's `to-string` is called, the functions passed to its setters before
 are called with its arguments to produce the final value.
 
+<!-- !test in 8 -->
 ```ls
 link = whatxml \a href : (.href)
   .._ (.name.to-upper-case!)
@@ -143,6 +164,7 @@ console.log link.to-string name : \google    href : "https://google.com"
 console.log link.to-string name : \runescape href : "http://runescape.com"
 ```
 
+<!-- !test out 8 -->
 ```xml
 <a href="https://google.com">GOOGLE</a>
 <a href="http://runescape.com">RUNESCAPE</a>
