@@ -51,8 +51,8 @@ what's passed in to the `to-string` call. (It's a lot like [D3][3]'s `.attr`.)
 
 ### Basics
 
-Create a root tag, call it with a `string` to create child tags, with an
-`object` to add attributes or call `_` to add text between the tags.
+Create a **root tag**, call it with a `string` to create **child tags**, with
+an `object` to **add attributes** or call `_` to **add text** between the tags.
 
 <!-- !test in 2 -->
 ```ls
@@ -80,7 +80,7 @@ console.log t.to-string!
 <tower lean="3.99"><place city="Pisa" country="Italy"></place></tower>
 ```
 
-Add self-closing tags and comments.
+Add **self-closing tags** and **comments**.
 
 <!-- !test in 4 -->
 ```ls
@@ -94,8 +94,8 @@ console.log x.to-string!
 <a><b /><!--what--></a>
 ```
 
-You can have stand-alone attributes without a value by setting them to `true`.
-([It's invalid XML][4], but fine in HTML.)
+You can have **stand-alone attributes** without a value by setting them to
+`true`.  ([It's invalid XML][4], but fine in HTML.)
 
 <!-- !test in 5 -->
 ```ls
@@ -112,7 +112,7 @@ Strings and `true` are acceptable attribute values (also functions; see
 Setting attributes to `false`, `null` or `undefined` removes that attribute, if
 present.
 
-Text is escaped automatically, but you can bypass that if you have
+Text is **escaped automatically**, but you can **bypass** that if you have
 ready-escaped text (e.g. from a generator like [`marked`][5]).
 
 <!-- !test in 6 -->
@@ -132,7 +132,7 @@ console.log x.to-string!
 <p><em>I know this is properly escaped already</em></p>
 ```
 
-You can have multiple top-level tags (useful for calling whatxml inside a
+You can have **multiple top-level tags** (useful for calling whatxml inside a
 template).
 
 <!-- !test in 7 -->
@@ -150,9 +150,9 @@ console.log x.to-string!
 
 ### Templating
 
-To generate content based on data, you can pass a function to any setter call.
-When a tag's `to-string` is called, the functions passed to its setters before
-are called with its arguments to produce the final value.
+To **generate content based on data**, you can pass a function to any setter
+call.  When a tag's `to-string` is called, the functions passed to its setters
+before are called with its arguments to produce the final value.
 
 <!-- !test in 8 -->
 ```ls
