@@ -1,6 +1,7 @@
 # whatxml
 
-XML/HTML templating with [LiveScript][1]'s [cascade][2] syntax.
+XML/HTML templating with [LiveScript][1]'s [cascade][2] syntax.  "What XML?"
+None ever again, that's what.
 
 [![npm package](https://img.shields.io/npm/v/whatxml.svg?style=flat-square)](https://www.npmjs.com/package/whatxml)
 [![Build status](https://img.shields.io/travis/anko/whatxml.svg?style=flat-square)](https://travis-ci.org/anko/whatxml)
