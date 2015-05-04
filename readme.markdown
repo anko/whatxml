@@ -3,9 +3,7 @@
 XML/HTML templating with [LiveScript][1]'s [cascade][2] syntax.
 
 [![npm package](https://img.shields.io/npm/v/whatxml.svg?style=flat-square)](https://www.npmjs.com/package/whatxml)
-&emsp;
 [![Build status](https://img.shields.io/travis/anko/whatxml.svg?style=flat-square)](https://travis-ci.org/anko/whatxml)
-&emsp;
 [![npm dependencies](https://img.shields.io/david/anko/whatxml.svg?style=flat-square)](https://david-dm.org/anko/whatxml)
 
 <!-- !test program
