@@ -29,9 +29,6 @@ new-tag = (name, init-attributes={} type={}) ->
 
   import-attributes init-attributes
 
-  die-if-self-closing = ->
-    throw new Error "Self-closing tags may not have children" if self-closing
-
   content = (
     render        # function for rendering value to string
     value         # value to render (or a template function)
@@ -73,6 +70,9 @@ new-tag = (name, init-attributes={} type={}) ->
 
       if self-closing then "<#name#s-attributes />"
       else                 "<#name#s-attributes>#s-children</#name>"
+
+  die-if-self-closing = ->
+    throw new Error "Self-closing tags may not have children" if self-closing
 
   render
     ..add-text    = -> die-if-self-closing! ; children.push text-content it
