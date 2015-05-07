@@ -82,7 +82,7 @@ new-tag = (name, init-attributes={} type={}) ->
     ..import-attributes = import-attributes
     ..add-child = ->
       die-if-self-closing!
-      new-tag.apply this, arguments
+      new-tag.apply null, arguments
         children.push ..
 
 # World-exposed API
@@ -95,7 +95,7 @@ wrap = (tag) ->
   ((first-arg) ->
     switch typeof first-arg
       | \string => wrap tag.add-child &0, &1
-      | \object => tag.import-attributes ... ; this
+      | \object => tag.import-attributes ...
       | otherwise =>
         throw Error "Expected string or object argument to tag creation" )
     ..to-string    = tag                       .bind!
