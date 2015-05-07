@@ -47,9 +47,9 @@ new-tag = (name, init-attributes={} type={}) ->
 
   render = (input) ->
 
-    stringify-children = -> children .map (-> it input) .reduce (+), ""
+    s-children = children .map (-> it input) .join ""
 
-    if anonymous then stringify-children!
+    if anonymous then s-children
     else
       # Resolve function-containing attributes
       s-attributes = attributes
@@ -72,8 +72,6 @@ new-tag = (name, init-attributes={} type={}) ->
 
       # Prepend space if necessary
       if s-attributes.length then s-attributes = " #s-attributes"
-
-      s-children = stringify-children!
 
       if self-closing then "<#name#s-attributes />"
       else                 "<#name#s-attributes>#s-children</#name>"
