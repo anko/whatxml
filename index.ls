@@ -2,7 +2,7 @@
   obj-to-pairs, map, unwords,
   Obj: { map : obj-map, filter : obj-filter }
 } = require \prelude-ls
-require! \he # for character entity coding
+{ encode } = require \he # character entity coding
 
 # Internal tag abstraction
 # ------------------------
@@ -39,9 +39,9 @@ new-tag = (name, init-attributes={} type={}) ->
   ) --> | typeof value is \function => template-data |> value |> render
         | otherwise                 => value |> render
 
-  text-content    = content -> he.encode it
+  text-content    = content -> encode it
   raw-content     = content -> it # identity
-  comment-content = content -> "<!--#{he.encode it}-->"
+  comment-content = content -> "<!--#{encode it}-->"
 
   render = (input) ->
 
@@ -64,8 +64,8 @@ new-tag = (name, init-attributes={} type={}) ->
         |> obj-filter (?)
         |> obj-to-pairs
         |> map ([key,value]) ->
-          | value is true => key                           # lone key
-          | otherwise     => "#key=\"#{he.encode value}\"" # valued key
+          | value is true => key                        # lone key
+          | otherwise     => "#key=\"#{encode value}\"" # valued key
         |> unwords
 
       # Prepend space if necessary
