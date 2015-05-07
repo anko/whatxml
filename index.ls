@@ -13,8 +13,8 @@ new-tag = (name, init-attributes={} type={}) ->
   anonymous    = type.anonymous    || false
   self-closing = type.self-closing || false
 
-  unless anonymous
-    throw Error "Tag name must be a String" unless typeof name is \string
+  if not anonymous and typeof name isnt \string
+    throw Error "Tag name must be a String"
 
   attributes = []
   children   = []
