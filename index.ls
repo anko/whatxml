@@ -10,7 +10,7 @@ require! \he # for character entity coding
 # tags or other content.
 new-tag = (name, init-attributes={} type={}) ->
 
-  anonymous    = type.anonymous || false
+  anonymous    = type.anonymous    || false
   self-closing = type.self-closing || false
 
   unless anonymous
@@ -19,8 +19,7 @@ new-tag = (name, init-attributes={} type={}) ->
   attributes = []
   children   = []
 
-  keep-attribute-value = (v) ->
-    if v in [ false null undefined ] then false else true
+  keep-attribute-value = (not in [ false null undefined ])
 
   set-attribute = (k, v) ->
     throw new Error "Anonymous tags may not have attributes" if anonymous
@@ -37,9 +36,8 @@ new-tag = (name, init-attributes={} type={}) ->
     render        # function for rendering value to string
     value         # value to render (or a template function)
     template-data # data passed when templating
-  ) -->
-    | typeof value is \function => template-data |> value |> render
-    | otherwise                 => value |> render
+  ) --> | typeof value is \function => template-data |> value |> render
+        | otherwise                 => value |> render
 
   text-content    = content -> he.encode it
   raw-content     = content -> it # identity
