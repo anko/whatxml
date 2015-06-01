@@ -16,7 +16,7 @@ sed '1s/^/whatxml = require ".\\/index.ls" ;/' \
 | head -c -1
 -->
 
-<!-- !test in 1 -->
+<!-- !test in initial example -->
 
 ```ls
 x = whatxml \html
@@ -31,7 +31,7 @@ console.log x.to-string { content : "Here's a paragraph." }
 
 →
 
-<!-- !test out 1 -->
+<!-- !test out initial example -->
 
 ```html
 <html><head><title>My page</title><link rel="stylesheet" type="text/css" href="main.css" /></head><body><p>Here&#x27;s a paragraph.</p></body></html>
@@ -59,7 +59,7 @@ inserted at that point.  (See [§ *Templating*][6].)
 Create a **root tag**, call it with a `string` to create **child tags**, with
 an `object` to **add attributes** or call `_` to **add text** between the tags.
 
-<!-- !test in 2 -->
+<!-- !test in basics example -->
 
 ```ls
 gandalf = whatxml \person      # Create a root tag.
@@ -69,7 +69,7 @@ gandalf = whatxml \person      # Create a root tag.
 console.log gandalf.to-string!
 ```
 
-<!-- !test out 2 -->
+<!-- !test out basics example -->
 
 ```xml
 <person profession="wizard"><name>Gandalf</name></person>
@@ -77,7 +77,7 @@ console.log gandalf.to-string!
 
 Handy shortcut:  When creating a tag, pass attributes as an object.
 
-<!-- !test in 3 -->
+<!-- !test in attribute shortcut example -->
 
 ```ls
 t = whatxml \tower lean : "3.99"
@@ -85,7 +85,7 @@ t = whatxml \tower lean : "3.99"
 console.log t.to-string!
 ```
 
-<!-- !test out 3 -->
+<!-- !test out attribute shortcut example -->
 
 ```xml
 <tower lean="3.99"><place city="Pisa" country="Italy"></place></tower>
@@ -93,7 +93,7 @@ console.log t.to-string!
 
 Add **self-closing tags** and **comments**.
 
-<!-- !test in 4 -->
+<!-- !test in self-closing tag and comment example -->
 
 ```ls
 x = whatxml \a
@@ -102,7 +102,7 @@ x = whatxml \a
 console.log x.to-string!
 ```
 
-<!-- !test out 4 -->
+<!-- !test out self-closing tag and comment example -->
 
 ```xml
 <a><b /><!--what--></a>
@@ -111,14 +111,14 @@ console.log x.to-string!
 You can have **stand-alone attributes** without a value by setting them to
 `true`.  ([It's invalid XML][7], but fine in HTML.)
 
-<!-- !test in 5 -->
+<!-- !test in stand-alone attribute example -->
 
 ```ls
 whatxml \input { +selected }
   ..to-string! |> console.log
 ```
 
-<!-- !test out 5 -->
+<!-- !test out stand-alone attribute example -->
 
 ```ls
 <input selected></input>
@@ -131,7 +131,7 @@ present.
 Text is **escaped automatically**, but you can **bypass** that with `raw` if
 you have ready-escaped text (e.g. from [`marked`][8]).
 
-<!-- !test in 6 -->
+<!-- !test in escaping example -->
 
 ```ls
 greeting = whatxml \p
@@ -143,7 +143,7 @@ x = whatxml \p
 console.log x.to-string!
 ```
 
-<!-- !test out 6 -->
+<!-- !test out escaping example -->
 
 ```xml
 <p>What&#x27;s up &#x3C;3</p>
@@ -152,7 +152,7 @@ console.log x.to-string!
 
 You can also have **multiple top-level tags**:
 
-<!-- !test in 7 -->
+<!-- !test in multiple top-level example -->
 
 ```ls
 x = whatxml!
@@ -161,7 +161,7 @@ x = whatxml!
 console.log x.to-string!
 ```
 
-<!-- !test out 7 -->
+<!-- !test out multiple top-level example -->
 
 ```xml
 <a></a><b></b>
@@ -173,7 +173,7 @@ To **generate content based on data**, you can pass a function to any setter
 call.  When a tag's `to-string` is called, the functions passed to its setters
 before are called with its arguments to produce the final value.
 
-<!-- !test in 8 -->
+<!-- !test in templating example -->
 
 ```ls
 link = whatxml \a href : (.href)
@@ -183,7 +183,7 @@ console.log link.to-string name : \google    href : "https://google.com"
 console.log link.to-string name : \runescape href : "http://runescape.com"
 ```
 
-<!-- !test out 8 -->
+<!-- !test out templating example -->
 
 ```xml
 <a href="https://google.com">GOOGLE</a>
