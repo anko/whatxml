@@ -33,7 +33,7 @@
     "prelude-ls": "^1.1.1"
   },
   "devDependencies": {
-    "LiveScript": "^1.2.0",
+    "livescript": "^1.4.0",
     "tape": "^4.0.0",
     "tests-ex-markdown": "^2.0.0"
   }
