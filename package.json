@@ -29,12 +29,12 @@
     "readme.markdown"
   ],
   "dependencies": {
-    "he": "^1.1.0",
+    "he": "^1.2.0",
     "prelude-ls": "^1.1.1"
   },
   "devDependencies": {
-    "livescript": "^1.5.0",
-    "tape": "^4.0.0",
-    "tests-ex-markdown": "^2.0.0"
+    "livescript": "^1.6.0",
+    "tape": "^4.10.1",
+    "tests-ex-markdown": "^2.0.3"
   }
 }
